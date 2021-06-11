@@ -36,7 +36,7 @@ func Inserir(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	statement, erro := db.Prepare("INSERT INTO service(servico,usuario,senha) VALUES (?,?,?)")
+	statement, erro := db.Prepare("INSERT INTO servico(service,user,password) VALUES (?,?,?)")
 
 	if erro != nil {
 		w.Write([]byte("Erro ao criar o statement"))
@@ -44,11 +44,17 @@ func Inserir(w http.ResponseWriter, r *http.Request) {
 	defer statement.Close()
 
 	insercao, erro := statement.Exec(service.Servico, service.User, service.Password)
+	_ = insercao
 	if erro != nil {
 		w.Write([]byte("Erro ao executar o statement"))
 		return
 	}
-	fmt.Println("Usuario inserido.", &insercao)
+	
+	fmt.Println("Usuario inserido.", service.Servico)
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(fmt.Sprintf("Usuario e senha guardados com sucesso, servico: %s", service.Servico)))
+}
+
+func Buscar(w http.ResponseWriter, r *http.Request) {
+
 }
