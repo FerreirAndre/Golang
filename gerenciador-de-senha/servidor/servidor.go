@@ -88,5 +88,8 @@ func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
 }
 
 func BuscarUsuario(w http.ResponseWriter, r *http.Request) {
+	//parametros := mux.Vars(r)
+
+	//servico:= parametros["id"]
 
 }
