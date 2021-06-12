@@ -14,7 +14,7 @@ type service struct {
 	Password string `json:"password"`
 }
 
-//Inserir a função insere um servico no banco de dados
+//Inserir, insere um servico no banco de dados
 func Inserir(w http.ResponseWriter, r *http.Request) {
 	corpoReq, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
@@ -49,12 +49,44 @@ func Inserir(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Erro ao executar o statement"))
 		return
 	}
-	
+
 	fmt.Println("Usuario inserido.", service.Servico)
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(fmt.Sprintf("Usuario e senha guardados com sucesso, servico: %s", service.Servico)))
 }
 
-func Buscar(w http.ResponseWriter, r *http.Request) {
+func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
+	db, erro := banco.Conectar()
+	if erro != nil {
+		w.Write([]byte("Erro ao conectar com o banco de dados."))
+		return
+	}
+	defer db.Close()
+
+	linhas, erro := db.Query("SELECT service FROM servico;")
+	if erro != nil {
+		w.Write([]byte("Erro ao consultar linhas."))
+		return
+	}
+	defer linhas.Close()
+
+	var services []service
+	for linhas.Next() {
+		var servico service
+
+		if erro := linhas.Scan(&servico.Servico); erro != nil {
+			w.Write([]byte("Erro ao scanear o serviço."))
+			return
+		}
+		services = append(services, servico)
+	}
+	w.WriteHeader(http.StatusOK)
+	if erro = json.NewEncoder(w).Encode(services); erro != nil {
+		w.Write([]byte("Erro ao converter serviço para json"))
+		return
+	}
+}
+
+func BuscarUsuario(w http.ResponseWriter, r *http.Request) {
 
 }
