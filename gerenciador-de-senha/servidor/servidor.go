@@ -6,6 +6,8 @@ import (
 	"gerenciador-de-senha/banco"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type service struct {
@@ -75,7 +77,7 @@ func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
 		var servico service
 
 		if erro := linhas.Scan(&servico.Servico); erro != nil {
-			w.Write([]byte("Erro ao scanear o serviço."))
+			w.Write([]byte("Erro ao scanear o serviço"))
 			return
 		}
 		services = append(services, servico)
@@ -88,8 +90,32 @@ func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
 }
 
 func BuscarUsuario(w http.ResponseWriter, r *http.Request) {
-	//parametros := mux.Vars(r)
+	parametros := mux.Vars(r)
 
-	//servico:= parametros["id"]
+	servico := parametros["id"]
 
+	db, erro := banco.Conectar()
+	if erro != nil {
+		w.Write([]byte("Erro ao conectar com o banco de dados"))
+		return
+	}
+
+	linha, erro := db.Query("SELECT * FROM servico WHERE service = ?", servico)
+	if erro != nil {
+		w.Write([]byte("Erro ao buscar servico"))
+		return
+	}
+
+	var servico_ service
+	
+	if linha.Next() {
+		if erro = linha.Scan(&servico_.Servico, &servico_.User,&servico_.Password); erro !=nil{
+			w.Write([]byte("Erro ao escanear o usuario"))
+		}
+	}
+	
+	if erro = json.NewEncoder(w).Encode(servico_);erro!=nil{
+		w.Write([]byte("Erro ao converter o usuario para json"))
+		return
+	}
 }
