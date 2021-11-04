@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	stringConn := "andre:devbook@/devbook?charset=utf8&parseTime=True&loc=Local"
+	stringConn := ""
 	db, erro := sql.Open("mysql", stringConn)
 	if erro != nil {
 		log.Fatal("erro ao conectar")

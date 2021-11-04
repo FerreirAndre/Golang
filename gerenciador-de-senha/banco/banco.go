@@ -8,7 +8,7 @@ import (
 )
 
 func Conectar() (*sql.DB, error) {
-	stringConn := "andre:devbook@/passwordkeeper?charset=utf8&parseTime=True&loc=Local"
+	stringConn := ""
 
 	db, erro := sql.Open("mysql", stringConn)
 	if erro != nil {
